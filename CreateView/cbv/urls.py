@@ -1,6 +1,6 @@
 from django.urls import path
 from django.views.generic import TemplateView, RedirectView
-from cbv.views import Ex2View, PostPreLoadTaskView, SinglePostView
+from .views import Ex2View, PostPreLoadTaskView, SinglePostView
 
 app_name = 'cbv'
 

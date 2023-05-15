@@ -1,12 +1,21 @@
 from django.views.generic.base import TemplateView, RedirectView
-from cbv.models import Post
+from .models import Post
 from django.shortcuts import get_object_or_404
 from django.db.models import F
 
 
 class Ex2View(TemplateView):
 
+    """TemplateResponseMixin
+    Provides a mechanism to construct a TemplateResponse, given a suitable context.
+    Attributes:
+    """
     template_name = "ex2.html"
+    #template_engine = The Name of a template engine to use for loading the template.
+    #response_class = Custom template loading or custom context objext instantiation
+    #content_type = Default Django uses 'text/html'
+
+    """ get_context_data(**kwargs) is a method inherited from ContextMixin """
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
