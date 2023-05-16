@@ -1,12 +1,15 @@
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
-from django.views.generic.edit import FormView, CreateView
-from books.models import Books
-from . forms import AddForm
+from django.views.generic.edit import FormView, CreateView, UpdateView
+from .models import Books
+from .forms import AddForm
 from django.db.models import F
 from django.utils import timezone
-
+# from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.views import redirect_to_login
+from django.shortcuts import redirect
 
 """ 
 class AddBookView(FormView):
@@ -19,6 +22,33 @@ class AddBookView(FormView):
         form.save()
         return super().form_valid(form) 
 """
+
+class UserAccessMixin(PermissionRequiredMixin):
+    #what happens if someone who doesn't a have permission tries to access a resource?
+    # we are going to deal with the above issue in this mixin
+
+    def dispatch(self, request, *args, **kwargs):
+
+        if (not self.request.user.is_authenticated):
+            return redirect_to_login(self.request.get_full_path(), self.get_login_url(), self.get_redirect_field_name())
+        if not self.has_permission():
+            return redirect('/books')
+
+        return super(UserAccessMixin, self).dispatch(request, *args, **kwargs)
+
+
+class BookEditView(UserAccessMixin, UpdateView):
+
+    raise_exception = False
+    permission_required = 'books.change_books'
+    permission_denied_message = ""
+    login_url = '/books/'
+    redirect_field_name = 'next'
+
+    model = Books
+    form_class = AddForm
+    template_name = 'add.html'
+    success_url = '/books/'
 
 
 class AddBookView(CreateView):
